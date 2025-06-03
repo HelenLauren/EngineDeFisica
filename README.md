@@ -13,6 +13,9 @@ Contém o arquivo HTML da **segunda atividade**, com foco prático nas três Lei
   - **1ª Lei:** O robô mantém seu estado de movimento até receber uma força externa (setas do teclado).
   - **2ª Lei:** A aceleração é proporcional à força aplicada.
   - **3ª Lei:** Ao aplicar uma força para se mover, partículas são emitidas na direção oposta (ação e reação).
-
+ 
+  - video demonstrativo:
+https://github.com/user-attachments/assets/3e7f2dd5-f943-4baa-ad62-87378ba41238
 ---
 Desenvolvido como parte das práticas de física aplicada a jogos com HTML5 e JavaScript.
+
