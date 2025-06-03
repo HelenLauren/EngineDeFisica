@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Cachoeira utilizando física</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #0a0f18;
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <script>
+    let particles = [];
+    let gravity;
+
+    function setup() {
+      createCanvas(600, 400);
+      gravity = createVector(0, 0.2);
+      noCursor();
+    }
+
+    function draw() {
+      background(15, 25, 35, 80);
+
+      for (let i = 0; i < 3; i++) {
+        let origin = createVector(random(width), 0);
+        particles.push(new Particle(origin));
+      }
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        let p = particles[i];
+        p.applyForce(gravity);
+
+        if (mouseIsPressed) {
+          let direction = mouseX > p.position.x ? 1 : -1;
+          let distance = abs(mouseX - p.position.x);
+          let windStrength = map(distance, 0, width, 0.05, 0.3);
+          let wind = createVector(windStrength * direction, 0);
+          p.applyForce(wind);
+        }
+
+        p.applyAirResistance();
+        p.update();
+        p.display();
+
+        if (p.isDead()) {
+          particles.splice(i, 1);
+        }
+      }
+
+      drawWindEffect();
+    }
+
+    function drawWindEffect() {
+      push();
+      translate(mouseX, mouseY);
+      stroke(180);
+      fill(180, 60);
+      strokeWeight(2);
+      let size = 20;
+      if (mouseIsPressed) {
+        let dir = createVector(mouseX - width / 2, 0).normalize();
+        rotate(dir.heading());
+        line(-size / 2, 0, size / 2, 0);
+        triangle(size / 2, 0, size / 2 - 6, -5, size / 2 - 6, 5);
+      } else {
+        ellipse(0, 0, 10);
+      }
+      pop();
+    }
+
+    class Particle {
+      constructor(pos) {
+        this.position = pos.copy();
+        this.velocity = createVector(random(-0.5, 0.5), random(0, 2));
+        this.acceleration = createVector(0, 0);
+        this.lifespan = 255;
+        this.size = random(6, 10);
+        this.startColor = color(100, 180, 255, 200);
+        this.endColor = color(0, 100, 255, 0);
+      }
+
+      applyForce(force) {
+        this.acceleration.add(force);
+      }
+
+      applyAirResistance() {
+        if (this.velocity.mag() > 0.1) {
+          let friction = this.velocity.copy().mult(-1).normalize().mult(0.015);
+          this.applyForce(friction);
+        }
+      }
+
+      update() {
+        this.velocity.add(this.acceleration);
+        this.position.add(this.velocity);
+        this.acceleration.mult(0);
+        this.lifespan -= 2;
+      }
+
+      display() {
+        noStroke();
+        let t = constrain(this.lifespan / 255, 0, 1);
+        let currentColor = lerpColor(this.endColor, this.startColor, t);
+        fill(currentColor);
+        ellipse(this.position.x, this.position.y, this.size, this.size * 1.5);
+      }
+
+      isDead() {
+        return this.lifespan <= 0 || this.position.y > height;
+      }
+    }
+  </script>
+</body>
+</html>
